@@ -22,20 +22,26 @@ import java.awt.event.ActionEvent;
 
 public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
 	private boolean isPolfTableSet = false;
+	private boolean isPolfTableMap = false;
 	
-	public OLColumnsFiltersSelection(boolean isPolfTableSet) {
+	public OLColumnsFiltersSelection(boolean isPolfTableSet, boolean isPolfTableMap) {
 		this.isPolfTableSet = isPolfTableSet;
+		this.isPolfTableMap = isPolfTableMap;
 	}
     
     protected void addColSelection() {
         addRPMColSelection();
-        addLoadColSelection();
+    	if (isPolfTableMap)
+    		addManifoldAbsolutePressureColSelection();
+    	else
+    		addLoadColSelection();
         addAFLearningColSelection();
         addAFCorrectionColSelection();
         addMAFVoltageColSelection();
         addWidebandAFRColSelection();
         addThrottleAngleColSelection();
-    	addCommandedAFRColSelection(isPolfTableSet);
+    	if (!isPolfTableMap)
+    		addCommandedAFRColSelection(isPolfTableSet);
     }
     
     protected void addFilterSelection() {
@@ -68,15 +74,28 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
     	else
     		Config.setRpmColumnName(value);
     	
-    	// Engine Load
-    	value = loadName.getText().trim();
-    	colName = loadLabelText;
-    	if (value.isEmpty()) {
-    		ret = false;
-    		error.append("\"").append(colName).append("\" column must be specified\n");
+    	if (isPolfTableMap) {
+    		// Manifold Absolute Pressure
+        	value = mapName.getText().trim();
+        	colName = mapLabelText;
+        	if (value.isEmpty()) {
+        		ret = false;
+        		error.append("\"").append(colName).append("\" column must be specified\n");
+        	}
+        	else
+        		Config.setMapColumnName(value);
     	}
-    	else
-    		Config.setLoadColumnName(value);
+    	else {
+	    	// Engine Load
+	    	value = loadName.getText().trim();
+	    	colName = loadLabelText;
+	    	if (value.isEmpty()) {
+	    		ret = false;
+	    		error.append("\"").append(colName).append("\" column must be specified\n");
+	    	}
+	    	else
+	    		Config.setLoadColumnName(value);
+    	}
 
     	// AFR Learning
     	value = afLearningName.getText().trim();
@@ -127,22 +146,24 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
     	}
     	else
     		Config.setThrottleAngleColumnName(value);
-    	
-    	// Commanded AFR
-    	value = commAfrName.getText().trim();
-    	colName = commAfrLabelText;
-    	if (isPolfTableSet) {
-	    	if (value.isEmpty())
-	    		value = Config.NO_NAME;
-	    	Config.setCommandedAfrColumnName(value);
-    	}
-    	else {
-	    	if (value.isEmpty()) {
-	    		ret = false;
-	    		error.append("\"").append(colName).append("\" column must be specified if \"Primary Open Loop Fueling\" table is not set.\n");
+
+    	if (!isPolfTableMap) {
+	    	// Commanded AFR
+	    	value = commAfrName.getText().trim();
+	    	colName = commAfrLabelText;
+	    	if (isPolfTableSet) {
+		    	if (value.isEmpty())
+		    		value = Config.NO_NAME;
+		    	Config.setCommandedAfrColumnName(value);
 	    	}
-	    	else
-	    		Config.setCommandedAfrColumnName(value);
+	    	else {
+		    	if (value.isEmpty()) {
+		    		ret = false;
+		    		error.append("\"").append(colName).append("\" column must be specified if \"Primary Open Loop Fueling\" table is not set.\n");
+		    	}
+		    	else
+		    		Config.setCommandedAfrColumnName(value);
+	    	}
     	}
     	
     	// Min MAF Voltage filter
