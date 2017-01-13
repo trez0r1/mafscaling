@@ -226,6 +226,7 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
         loadList.setSelectedIndex(0);
         checkBoxMap.setSelected(false);
         checkBoxMap.setEnabled(true);
+        isPolfMap = false;
     }
     
     /**
