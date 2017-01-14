@@ -737,16 +737,14 @@ public class OpenLoop extends AMafScaling {
 		                            afr = Double.valueOf(afrflds[logAfrColIdx]);
 		                            rpm = Double.valueOf(flds[logRpmColIdx]);
                                     afr = afr / ((100.0 - (ltft + stft)) / 100.0);
-                                    if (logCommandedAfrColIdx >= 0)
-                                        cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
-                                    else if (isPolfSet) {
-                                    	loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
+
+                                    if (isPolfSet) {
+                                        loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
                                         cmdafr = Utils.calculateCommandedAfr(rpm, loadOrMap, minWotEnrichment, polfTable);
                                     }
-                                    else {
-		                            	JOptionPane.showMessageDialog(null, "Please set either \"Commanded AFR\" column or \"Primary Open Loop Fueling\" table", "Error", JOptionPane.ERROR_MESSAGE);
-		                            	return;
-		                            }
+                                    else
+                                        cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
+
 	                            	afrErr = (afr - cmdafr) / cmdafr * 100.0;
 		                            if (Math.abs(afrErr) <= afrErrPrct) {
 		                            	Utils.ensureRowCount(j + 1, runTables[i]);
