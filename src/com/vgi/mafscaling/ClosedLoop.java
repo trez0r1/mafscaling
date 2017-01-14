@@ -554,11 +554,12 @@ public class ClosedLoop extends AMafScaling {
     private void calculateCorrectedGS() {
         boolean polfTableOk = polfTable.validate();
         if (!polfTableOk)
-        {
             JOptionPane.showMessageDialog(null, "Fueling data is not set - '" + Afr1TableName + "' and '" + Afr2TableName + "' will not be displayed", "Warning", JOptionPane.WARNING_MESSAGE);
-        }
         double[] values = new double[LogDataTableHeaders.length];
         double corr;
+        double rpm;
+        double load;
+        double afr;
         double val1;
         double val2;
         Integer val;
@@ -611,10 +612,12 @@ public class ClosedLoop extends AMafScaling {
             if (valStr.isEmpty())
                 break;
             // "Time", "Load", "RPM", "MafV", "AFR", "STFT", "LTFT", "dV/dt", "IAT"
-            double load = values[1], rpm = values[2], afr = values[4]; // improves human look-up performance
             timeArray.add(values[0]);
+            load = values[1];
+            rpm = values[2];
             rpmArray.add(rpm);
             mafvArray.add(values[3]);
+            afr = values[4];
             corr = values[5] + values[6];
             trimArray.add(corr);
             dvdtArray.add(values[7]);
@@ -1016,7 +1019,7 @@ public class ClosedLoop extends AMafScaling {
     
     protected void loadLogFile() {
         boolean displayDialog = true;
-        boolean isPolfTableMap = polfTable != null && polfTable.isMap();
+        boolean isPolfTableMap = polfTable.isMap();
         File[] files = fileChooser.getSelectedFiles();
         for (File file : files) {
             BufferedReader br = null;
