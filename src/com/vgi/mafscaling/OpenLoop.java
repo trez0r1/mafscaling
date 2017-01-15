@@ -144,7 +144,7 @@ public class OpenLoop extends AMafScaling {
     // CREATE CHART TAB
     //////////////////////////////////////////////////////////////////////////////////////
     
-    protected void createGraghTab() {
+    protected void createGraphTab() {
         JPanel cntlPanel = new JPanel();
         JPanel plotPanel = createGraphPlotPanel(cntlPanel);
         add(plotPanel, "<html><div style='text-align: center;'>C<br>h<br>a<br>r<br>t</div></html>");

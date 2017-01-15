@@ -279,7 +279,7 @@ public class ClosedLoop extends AMafScaling {
     // CREATE CHART TAB
     //////////////////////////////////////////////////////////////////////////////////////
     
-    protected void createGraghTab() {
+    protected void createGraphTab() {
         JPanel cntlPanel = new JPanel();
         JPanel plotPanel = createGraphPlotPanel(cntlPanel);
         add(plotPanel, "<html><div style='text-align: center;'>C<br>h<br>a<br>r<br>t</div></html>");
@@ -552,8 +552,8 @@ public class ClosedLoop extends AMafScaling {
     }
 
     private void calculateCorrectedGS() {
-        boolean polfTableOk = polfTable.validate();
-        if (!polfTableOk)
+        boolean polfTableSet = polfTable.validate();
+        if (!polfTableSet)
             JOptionPane.showMessageDialog(null, "Fueling data is not set - '" + Afr1TableName + "' and '" + Afr2TableName + "' will not be displayed", "Warning", JOptionPane.WARNING_MESSAGE);
         double[] values = new double[LogDataTableHeaders.length];
         double corr;
@@ -582,7 +582,7 @@ public class ClosedLoop extends AMafScaling {
         }
         ArrayList<Double> afrRpmArray = new ArrayList<Double>();
         ArrayList<Double> afrLoadOrMapArray = new ArrayList<Double>();
-        if (polfTableOk) {
+        if (polfTableSet) {
             for (i = 1; i < polfTable.getRowCount(); ++i) {
                 afrRpmArray.add(Double.valueOf(polfTable.getValueAt(i, 0).toString()));
                 Utils.ensureRowCount(i + 1, afr1Table);
@@ -634,7 +634,7 @@ public class ClosedLoop extends AMafScaling {
             else
                 modeCountMap.put(roundedCorr, val + 1);
             
-            if (polfTableOk) {
+            if (polfTableSet) {
                 closestLoadOrMapIdx = Utils.closestValueIndex((polfTable.isMap() ? mapArray.get(i) : load), afrLoadOrMapArray) + 1;
                 closestRmpIdx = Utils.closestValueIndex(rpm, afrRpmArray) + 1;
                 val1 = (afr1Table.getValueAt(closestRmpIdx, closestLoadOrMapIdx).toString().isEmpty()) ? 0 : Double.valueOf(afr1Table.getValueAt(closestRmpIdx, closestLoadOrMapIdx).toString());
