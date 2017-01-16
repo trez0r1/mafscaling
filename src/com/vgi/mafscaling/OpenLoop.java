@@ -605,15 +605,15 @@ public class OpenLoop extends AMafScaling {
         logLoadColIdx = columns.indexOf(logLoadColName);
         logMapColIdx = columns.indexOf(logMapColName);
         logCommandedAfrColIdx = columns.indexOf(logCommandedAfrColName);
-        if (logThtlAngleColIdx == -1)    { Config.setThrottleAngleColumnName(Config.NO_NAME); ret = false; }
-        if (logAfLearningColIdx == -1)   { Config.setAfLearningColumnName(Config.NO_NAME);    ret = false; }
-        if (logAfCorrectionColIdx == -1) { Config.setAfCorrectionColumnName(Config.NO_NAME);  ret = false; }
-        if (logMafvColIdx == -1)         { Config.setMafVoltageColumnName(Config.NO_NAME);    ret = false; }
-        if (logAfrColIdx == -1)          { Config.setWidebandAfrColumnName(Config.NO_NAME);   ret = false; }
-        if (logRpmColIdx == -1)          { Config.setRpmColumnName(Config.NO_NAME);           ret = false; }
-        if (logLoadColIdx == -1)         { Config.setLoadColumnName(Config.NO_NAME);          if (!isPolfTableMap) ret = false; }
-        if (logMapColIdx == -1)          { Config.setMapColumnName(Config.NO_NAME);           if (isPolfTableMap) ret = false;  }
-        if (logCommandedAfrColIdx == -1) { Config.setCommandedAfrColumnName(Config.NO_NAME);  if (!isPolfTableSet) ret = false; }
+        if (logThtlAngleColIdx == -1)                                 { Config.setThrottleAngleColumnName(Config.NO_NAME); ret = false; }
+        if (logAfLearningColIdx == -1)                                { Config.setAfLearningColumnName(Config.NO_NAME);    ret = false; }
+        if (logAfCorrectionColIdx == -1)                              { Config.setAfCorrectionColumnName(Config.NO_NAME);  ret = false; }
+        if (logMafvColIdx == -1)                                      { Config.setMafVoltageColumnName(Config.NO_NAME);    ret = false; }
+        if (logAfrColIdx == -1)                                       { Config.setWidebandAfrColumnName(Config.NO_NAME);   ret = false; }
+        if (logRpmColIdx == -1)                                       { Config.setRpmColumnName(Config.NO_NAME);           ret = false; }
+        if (logLoadColIdx == -1 && isPolfTableSet && !isPolfTableMap) { Config.setLoadColumnName(Config.NO_NAME);          ret = false; }
+        if (logMapColIdx == -1 && isPolfTableMap)                     { Config.setMapColumnName(Config.NO_NAME);           ret = false; }
+        if (logCommandedAfrColIdx == -1 && !isPolfTableSet)           { Config.setCommandedAfrColumnName(Config.NO_NAME);  ret = false; }
         wotPoint = Config.getWOTStationaryPointValue();
         minMafV = Config.getMafVMinimumValue();
         afrErrPrct = Config.getWidebandAfrErrorPercentValue();
