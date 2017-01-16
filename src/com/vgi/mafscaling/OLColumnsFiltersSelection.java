@@ -128,7 +128,11 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
             Config.setThrottleAngleColumnName(value);
 
         if (isPolfTableSet) {
+            Config.setCommandedAfrColumnName(Config.NO_NAME); // un-set opposites
+
             if (isPolfTableMap) {
+                Config.setLoadColumnName(Config.NO_NAME);
+                
                 // Manifold Absolute Pressure
                 value = mapName.getText().trim();
                 colName = mapLabelText;
@@ -140,6 +144,8 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
                     Config.setMapColumnName(value);
             }
             else {
+                Config.setMapColumnName(Config.NO_NAME);
+
                 // Engine Load
                 value = loadName.getText().trim();
                 colName = loadLabelText;
@@ -152,6 +158,9 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
             }
         }
         else {
+            Config.setMapColumnName(Config.NO_NAME);
+            Config.setLoadColumnName(Config.NO_NAME);
+
             // Commanded AFR
             value = commAfrName.getText().trim();
             colName = commAfrLabelText;

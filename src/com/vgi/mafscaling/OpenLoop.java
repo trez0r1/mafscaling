@@ -603,8 +603,8 @@ public class OpenLoop extends AMafScaling {
         logAfrColIdx = columns.indexOf(logAfrColName);
         logRpmColIdx = columns.indexOf(logRpmColName);
         logLoadColIdx = columns.indexOf(logLoadColName);
-        logCommandedAfrColIdx = columns.indexOf(logCommandedAfrColName);
         logMapColIdx = columns.indexOf(logMapColName);
+        logCommandedAfrColIdx = columns.indexOf(logCommandedAfrColName);
         if (logThtlAngleColIdx == -1)    { Config.setThrottleAngleColumnName(Config.NO_NAME); ret = false; }
         if (logAfLearningColIdx == -1)   { Config.setAfLearningColumnName(Config.NO_NAME);    ret = false; }
         if (logAfCorrectionColIdx == -1) { Config.setAfCorrectionColumnName(Config.NO_NAME);  ret = false; }
