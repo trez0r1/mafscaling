@@ -26,16 +26,20 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.util.regex.Pattern;
-
 import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -61,35 +65,29 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
     private JTable tempFuelingTable = null;
     private JButton btnSetDefault = null;
     private JComboBox<String> loadList = null;
-    private String fileName = Config.getDefaultPOLFueling();
+    private String fileName = "";
     private String tempFileName = "";
     private JCheckBox checkBoxMap = null;
     private boolean isPolfMap = false;
     
     public PrimaryOpenLoopFuelingTable() {
-        btnSetDefault = new JButton("Set Default");
         checkBoxMap = new JCheckBox("This fueling table has MAP (psi abs) axis");
         File appdir = new File(".");
         FileSystemView fsv = new RestrictedFileSystemView(appdir);
         fileChooser = new JFileChooser(fsv);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileName = Config.getDefaultPOLFueling();
+        btnSetDefault = new JButton("Set Default");
+        btnSetDefault.addActionListener(this);
         if (!fileName.isEmpty()) {
             fuelingTable = loadPolFueling(fuelingTable, fileName);
-            if (fuelingTable == null) {
-                Config.setDefaultPOLFueling("");
-                String[] files = Config.getPOLFuelingFiles().split(",");
-                String fs = "";
-                for (String fn : files) {
-                    if (fn.equals(fileName) || fn.isEmpty())
-                        continue;
-                    fs += ("," + fn);
-                }
-                Config.setPOLFuelingFiles(fs);
-                fileName = "";
-            }
-            else {
+            if (fuelingTable != null) {
                 if (Config.getDefaultPOLFueling().equals(fileName))
                     btnSetDefault.setText("Unset Default");
+            }
+            else {
+                Config.setDefaultPOLFueling("");
+                resetPOLFuelingFiles(fileName, "");
             }
         }
     }
@@ -103,7 +101,7 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
         gbl_dataPanel.rowWeights = new double[]{0.0, 0.0, 0.0};
         fuelingPanel.setLayout(gbl_dataPanel);
         
-        loadList = new JComboBox<String>(Config.getPOLFuelingFiles().split(","));
+        loadList = new JComboBox<String>(Config.getPOLFuelingFiles().split(Utils.fileFieldSplitter));
         GridBagConstraints gbc_loadList = new GridBagConstraints();
         gbc_loadList.anchor = GridBagConstraints.EAST;
         gbc_loadList.insets = new Insets(1, 5, 1, 1);
@@ -139,7 +137,6 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
         gbc_btnSetDefault.gridx = 3;
         gbc_btnSetDefault.gridy = 0;
         btnSetDefault.setActionCommand("setdefault");
-        btnSetDefault.addActionListener(this);
         fuelingPanel.add(btnSetDefault, gbc_btnSetDefault);
         
         JButton btnClearData = new JButton("Clear");
@@ -164,6 +161,8 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
 
         tempFuelingTable = createFuelingTable();
         tempFileName = fileName;
+        if (btnSetDefault.getText().equals("Unset Default") && !Config.getDefaultPOLFueling().equals(tempFileName))
+            btnSetDefault.setText("Set Default");
 
         GridBagConstraints gbc_fuelingTable = new GridBagConstraints();
         gbc_fuelingTable.insets = new Insets(5, 0, 0, 0);
@@ -215,6 +214,22 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
             }
         }
         return true;
+    }
+    
+    /**
+     * Method resets POL Fueling files list to encounter for removed files
+     */
+    public void resetPOLFuelingFiles(String remFileName, String addFileName) {
+        String[] files = Config.getPOLFuelingFiles().split(Utils.fileFieldSplitter);
+        String fs = "";
+        for (String fn : files) {
+            if (fn.equals(remFileName) || fn.isEmpty())
+                continue;
+            fs += ("," + fn);
+        }
+        if (!addFileName.isEmpty())
+            fs += ("," + addFileName);
+        Config.setPOLFuelingFiles(fs);
     }
     
     /**
@@ -313,7 +328,7 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
      * @param out, file handler
      * @throws IOException 
      */
-    public void write(FileWriter out) throws IOException {
+    public void write(Writer out) throws IOException {
         write(fuelingTable, out);
     }
 
@@ -324,7 +339,7 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
      * @param out, file handler
      * @throws IOException 
      */
-    private void write(JTable fuelingTable, FileWriter out) throws IOException {
+    private void write(JTable fuelingTable, Writer out) throws IOException {
         if (fuelingTable != null) {
             if (checkBoxMap.isSelected())
                 out.write("MAP\n");
@@ -453,17 +468,17 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
         File file = new File("./" + fileName);
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(file));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsoluteFile()), Config.getEncoding()));
             int i = 0;
             String line = br.readLine();
-            while (line != null)
+            while (line != null) {
             {
                 if (0 == i && line.equals("MAP")) {
                     checkBoxMap.setSelected(true);
                     isPolfMap = true;
                 }
                 else
-                    fuelingTable = setValueAtRow(fuelingTable, i++, line.split(",", -1));
+                    fuelingTable = setValueAtRow(fuelingTable, i++, line.split(Utils.fileFieldSplitter, -1));
                 line = br.readLine();
             }
             if (i > 0 && validateFuelingData(fuelingTable))
@@ -499,12 +514,9 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
             Config.setDefaultPOLFueling("");
             btnSetDefault.setText("Set Default");
         }
-        else {
-            save(fuelingTable);
-            if (!tempFileName.isEmpty()) {
-                Config.setDefaultPOLFueling(tempFileName);
-                btnSetDefault.setText("Unset Default");
-            }
+        else if (!save(fuelingTable).isEmpty()) {
+            Config.setDefaultPOLFueling(tempFileName);
+            btnSetDefault.setText("Unset Default");
         }
     }
     
@@ -513,45 +525,44 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
      * @param fuelingTable
      * @return
      */
-    private void save(JTable fuelingTable) {
-        if (!validateFuelingData(fuelingTable))
-            return;
+    private String save(JTable fuelingTable) {
+        if (Utils.isTableEmpty(fuelingTable) || !validateFuelingData(fuelingTable))
+            return "";
+        File file = null;
         if (tempFileName.isEmpty()) {
             if (JFileChooser.APPROVE_OPTION != fileChooser.showSaveDialog(null))
-                return;
-            File file = fileChooser.getSelectedFile();
+                return "";
+            file = fileChooser.getSelectedFile();
             tempFileName = file.getName();
-            FileWriter out = null;
-            try {
-                out = new FileWriter(file);
-                write(fuelingTable, out);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                logger.error(e);
-            }
-            finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    }
-                    catch (IOException e) {
-                        logger.error(e);
-                    }
+        }
+        else
+            file = new File(tempFileName);
+        Writer out = null;
+        try {
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Config.getEncoding()));
+            write(fuelingTable, out);
+        }
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Failed to save file " + tempFileName + ": " + e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+            tempFileName = "";
+        }
+        finally {
+            if (out != null) {
+                try {
+                    out.close();
+                }
+                catch (IOException e) {
+                    logger.error(e);
                 }
             }
-            String[] files = Config.getPOLFuelingFiles().split(",");
-            String fs = "";
-            for (String fn : files) {
-                if (fn.equals(fileName) || fn.isEmpty())
-                    continue;
-                fs += ("," + fn);
-            }
-            fs += ("," + tempFileName);
-            Config.setPOLFuelingFiles(fs);
-            loadList.addItem(tempFileName);
+        }
+        if (!tempFileName.isEmpty()) {
+            resetPOLFuelingFiles(tempFileName, tempFileName);
+            if (((DefaultComboBoxModel<String>)loadList.getModel()).getIndexOf(tempFileName) == -1)
+                loadList.addItem(tempFileName);
             loadList.setSelectedItem(tempFileName);
         }
+        return tempFileName;
     }
     
     /**
@@ -559,33 +570,21 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
      * @param fuelingTable
      */
     private void load() {
-        String fileName = (String)loadList.getSelectedItem();
-        clear();
+        Utils.clearTable(tempFuelingTable);
+        tempFileName = (String)loadList.getSelectedItem();
         btnSetDefault.setText("Set Default");
-        if (!fileName.isEmpty()) {
-            if (loadPolFueling(tempFuelingTable, fileName) != null) {
-                tempFileName = fileName;
-                loadList.setSelectedItem(fileName);
-                if (Config.getDefaultPOLFueling().equals(fileName))
+        if (!tempFileName.isEmpty()) {
+            if (loadPolFueling(tempFuelingTable, tempFileName) != null) {
+                loadList.setSelectedItem(tempFileName);
+                if (Config.getDefaultPOLFueling().equals(tempFileName))
                     btnSetDefault.setText("Unset Default");
             }
             else {
-                loadList.removeItem(fileName);
+                loadList.removeItem(tempFileName);
                 loadList.setSelectedItem("");
-                if (!fileName.isEmpty()) {
-                    String[] files = Config.getPOLFuelingFiles().split(",");
-                    String fs = "";
-                    for (String fn : files) {
-                        if (fn.equals(fileName) || fn.isEmpty())
-                            continue;
-                        fs += ("," + fn);
-                    }
-                    Config.setPOLFuelingFiles(fs);
-                }
+                resetPOLFuelingFiles(tempFileName, "");
             }
         }
-        else if (Config.getDefaultPOLFueling().equals(fileName))
-            btnSetDefault.setText("Unset Default");
     }
 
     @Override
