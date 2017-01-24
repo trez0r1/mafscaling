@@ -472,7 +472,6 @@ public class PrimaryOpenLoopFuelingTable implements ActionListener {
             int i = 0;
             String line = br.readLine();
             while (line != null) {
-            {
                 if (0 == i && line.equals("MAP")) {
                     checkBoxMap.setSelected(true);
                     isPolfMap = true;

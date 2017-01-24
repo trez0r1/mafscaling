@@ -24,15 +24,16 @@ import javax.swing.JEditorPane;
 
 public class MafIatColumnsFiltersSelection extends ColumnsFiltersSelection {
     private boolean isPolfTableSet = false;
+    private boolean isPolfTableMap = false;
     
-    public MafIatColumnsFiltersSelection(boolean isPolfTableSet) {
+    public MafIatColumnsFiltersSelection(boolean isPolfTableSet, boolean isPolfTableMap) {
         this.isPolfTableSet = isPolfTableSet;
+        this.isPolfTableMap = isPolfTableMap;
     }
     
     protected void addColSelection() {
         addTimeColSelection();
         addRPMColSelection();
-        addLoadColSelection();
         addThrottleAngleColSelection();
         addAFLearningColSelection();
         addAFCorrectionColSelection();
@@ -42,7 +43,15 @@ public class MafIatColumnsFiltersSelection extends ColumnsFiltersSelection {
         addIATColSelection();
         addMAFColSelection();
         addClOlStatusColSelection();
-        addCommandedAFRColSelection(isPolfTableSet);
+        if (isPolfTableSet) {
+            if (isPolfTableMap)
+                addManifoldAbsolutePressureColSelection();
+            else
+                addLoadColSelection();
+        }
+        else {
+            addCommandedAFRColSelection(isPolfTableSet);
+        }
     }
     
     protected void addFilterSelection() {
@@ -91,16 +100,6 @@ public class MafIatColumnsFiltersSelection extends ColumnsFiltersSelection {
         else
             Config.setRpmColumnName(value);
         
-        // Engine Load
-        value = loadName.getText().trim();
-        colName = loadLabelText;
-        if (value.isEmpty()) {
-            ret = false;
-            error.append("\"").append(colName).append("\" column must be specified\n");
-        }
-        else
-            Config.setLoadColumnName(value);
-
         // AFR Learning
         value = afLearningName.getText().trim();
         colName = afLearningLabelText;
@@ -191,23 +190,6 @@ public class MafIatColumnsFiltersSelection extends ColumnsFiltersSelection {
         else
             Config.setWidebandAfrColumnName(value);
 
-        // Commanded AFR
-        value = commAfrName.getText().trim();
-        colName = commAfrLabelText;
-        if (isPolfTableSet) {
-            if (value.isEmpty())
-                value = Config.NO_NAME;
-            Config.setCommandedAfrColumnName(value);
-        }
-        else {
-            if (value.isEmpty()) {
-                ret = false;
-                error.append("\"").append(colName).append("\" column must be specified if \"Primary Open Loop Fueling\" table is not set.\n");
-            }
-            else
-                Config.setCommandedAfrColumnName(value);
-        }
-
         // MAF
         value = mafName.getText().trim();
         colName = mafLabelText;
@@ -227,6 +209,51 @@ public class MafIatColumnsFiltersSelection extends ColumnsFiltersSelection {
         }
         else
             Config.setMIClOlStatusValue(Integer.valueOf(value));
+        
+        if (isPolfTableSet) {
+            Config.setCommandedAfrColumnName(Config.NO_NAME); // un-set opposites
+
+            if (isPolfTableMap) {
+                Config.setLoadColumnName(Config.NO_NAME);
+                
+                // Manifold Absolute Pressure
+                value = mapName.getText().trim();
+                colName = mapLabelText;
+                if (value.isEmpty()) {
+                    ret = false;
+                    error.append("\"").append(colName).append("\" column must be specified\n");
+                }
+                else
+                    Config.setMapColumnName(value);
+            }
+            else {
+                Config.setMapColumnName(Config.NO_NAME);
+
+                // Engine Load
+                value = loadName.getText().trim();
+                colName = loadLabelText;
+                if (value.isEmpty()) {
+                    ret = false;
+                    error.append("\"").append(colName).append("\" column must be specified\n");
+                }
+                else
+                    Config.setLoadColumnName(value);
+            }
+        }
+        else {
+            Config.setMapColumnName(Config.NO_NAME);
+            Config.setLoadColumnName(Config.NO_NAME);
+
+            // Commanded AFR
+            value = commAfrName.getText().trim();
+            colName = commAfrLabelText;
+            if (value.isEmpty()) {
+                ret = false;
+                error.append("\"").append(colName).append("\" column must be specified\n");
+            }
+            else
+                Config.setCommandedAfrColumnName(value);
+        }
         
         // MAF IAT Compensation values in ratio
         Config.setIsMafIatInRatio(isMafIatInRatioBool.isSelected());
