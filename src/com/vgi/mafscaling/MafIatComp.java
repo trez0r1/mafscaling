@@ -367,12 +367,12 @@ public class MafIatComp extends ACompCalc {
                                 else {
                                     afr = Double.valueOf(afrflds[logWBAfrColIdx]);
                                     rpm = Double.valueOf(flds[logRpmColIdx]);
-                                    if (isPolfSet) {
+                                    if (logCommandedAfrColIdx >= 0)
+                                        cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
+                                    else {
                                         loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
                                         cmdafr = Utils.calculateCommandedAfr(rpm, loadOrMap, minWotEnrichment, polfTable);
                                     }
-                                    else
-                                        cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
                                     corr = (afr / ((100.0 - trims) / 100.0)) / cmdafr;
                                 }
                                 iat = Double.valueOf(flds[logIatColIdx]);

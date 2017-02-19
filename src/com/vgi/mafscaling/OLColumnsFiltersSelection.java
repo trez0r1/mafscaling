@@ -31,20 +31,16 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
     
     protected void addColSelection() {
         addRPMColSelection();
+        if (isPolfTableMap)
+            addManifoldAbsolutePressureColSelection();
+        else if (isPolfTableSet)
+            addLoadColSelection();
         addAFLearningColSelection();
         addAFCorrectionColSelection();
         addMAFVoltageColSelection();
         addWidebandAFRColSelection();
         addThrottleAngleColSelection();
-        if (isPolfTableSet) {
-            if (isPolfTableMap)
-                addManifoldAbsolutePressureColSelection();
-            else
-                addLoadColSelection();
-        }
-        else {
-            addCommandedAFRColSelection(isPolfTableSet);
-        }
+        addCommandedAFRColSelection(isPolfTableSet);
     }
     
     protected void addFilterSelection() {
@@ -77,6 +73,29 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
         else
             Config.setRpmColumnName(value);
 
+        if (isPolfTableMap) {
+            // Manifold Absolute Pressure
+            value = mapName.getText().trim();
+            colName = mapLabelText;
+            if (value.isEmpty()) {
+                ret = false;
+                error.append("\"").append(colName).append("\" column must be specified\n");
+            }
+            else
+                Config.setMapColumnName(value);
+        }
+        else if (isPolfTableSet) {
+            // Engine Load
+            value = loadName.getText().trim();
+            colName = loadLabelText;
+            if (value.isEmpty()) {
+                ret = false;
+                error.append("\"").append(colName).append("\" column must be specified\n");
+            }
+            else
+                Config.setLoadColumnName(value);
+        }
+        
         // AFR Learning
         value = afLearningName.getText().trim();
         colName = afLearningLabelText;
@@ -127,46 +146,18 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
         else
             Config.setThrottleAngleColumnName(value);
 
+        // Commanded AFR
+        value = commAfrName.getText().trim();
+        colName = commAfrLabelText;
         if (isPolfTableSet) {
-            Config.setCommandedAfrColumnName(Config.NO_NAME); // un-set opposites
-
-            if (isPolfTableMap) {
-                Config.setLoadColumnName(Config.NO_NAME);
-                
-                // Manifold Absolute Pressure
-                value = mapName.getText().trim();
-                colName = mapLabelText;
-                if (value.isEmpty()) {
-                    ret = false;
-                    error.append("\"").append(colName).append("\" column must be specified\n");
-                }
-                else
-                    Config.setMapColumnName(value);
-            }
-            else {
-                Config.setMapColumnName(Config.NO_NAME);
-
-                // Engine Load
-                value = loadName.getText().trim();
-                colName = loadLabelText;
-                if (value.isEmpty()) {
-                    ret = false;
-                    error.append("\"").append(colName).append("\" column must be specified\n");
-                }
-                else
-                    Config.setLoadColumnName(value);
-            }
+            if (value.isEmpty())
+                value = Config.NO_NAME;
+            Config.setCommandedAfrColumnName(value);
         }
         else {
-            Config.setMapColumnName(Config.NO_NAME);
-            Config.setLoadColumnName(Config.NO_NAME);
-
-            // Commanded AFR
-            value = commAfrName.getText().trim();
-            colName = commAfrLabelText;
             if (value.isEmpty()) {
                 ret = false;
-                error.append("\"").append(colName).append("\" column must be specified\n");
+                error.append("\"").append(colName).append("\" column must be specified if \"Primary Open Loop Fueling\" table is not set.\n");
             }
             else
                 Config.setCommandedAfrColumnName(value);

@@ -1000,16 +1000,16 @@ public class ClosedLoop extends AMafScaling {
         logMafvColIdx = columns.indexOf(logMafvColName);
         logIatColIdx = columns.indexOf(logIatColName);
         logMapColIdx = columns.indexOf(logMapColName);
-        if (logClOlStatusColIdx == -1)   { Config.setClOlStatusColumnName(Config.NO_NAME);   ret = false; }
-        if (logAfLearningColIdx == -1)   { Config.setAfLearningColumnName(Config.NO_NAME);   ret = false; }
-        if (logAfCorrectionColIdx == -1) { Config.setAfCorrectionColumnName(Config.NO_NAME); ret = false; }
-        if (logAfrColIdx == -1)          { Config.setAfrColumnName(Config.NO_NAME);          ret = false; }
-        if (logRpmColIdx == -1)          { Config.setRpmColumnName(Config.NO_NAME);          ret = false; }
-        if (logLoadColIdx == -1)         { Config.setLoadColumnName(Config.NO_NAME);         ret = false; }
-        if (logTimeColIdx == -1)         { Config.setTimeColumnName(Config.NO_NAME);         ret = false; }
-        if (logMafvColIdx == -1)         { Config.setMafVoltageColumnName(Config.NO_NAME);   ret = false; }
-        if (logIatColIdx == -1)          { Config.setIatColumnName(Config.NO_NAME);          ret = false; }
-        if (logMapColIdx == -1)          { Config.setMapColumnName(Config.NO_NAME); if (isPolfTableMap) ret = false; }
+        if (logClOlStatusColIdx == -1)            { Config.setClOlStatusColumnName(Config.NO_NAME);   ret = false; }
+        if (logAfLearningColIdx == -1)            { Config.setAfLearningColumnName(Config.NO_NAME);   ret = false; }
+        if (logAfCorrectionColIdx == -1)          { Config.setAfCorrectionColumnName(Config.NO_NAME); ret = false; }
+        if (logAfrColIdx == -1)                   { Config.setAfrColumnName(Config.NO_NAME);          ret = false; }
+        if (logRpmColIdx == -1)                   { Config.setRpmColumnName(Config.NO_NAME);          ret = false; }
+        if (logLoadColIdx == -1)                  { Config.setLoadColumnName(Config.NO_NAME);         ret = false; }
+        if (logTimeColIdx == -1)                  { Config.setTimeColumnName(Config.NO_NAME);         ret = false; }
+        if (logMafvColIdx == -1)                  { Config.setMafVoltageColumnName(Config.NO_NAME);   ret = false; }
+        if (logIatColIdx == -1)                   { Config.setIatColumnName(Config.NO_NAME);          ret = false; }
+        if (logMapColIdx == -1 && isPolfTableMap) { Config.setMapColumnName(Config.NO_NAME);          ret = false; }
         clValue = Config.getClOlStatusValue();
         minCellHitCount = Config.getCLMinCellHitCount();
         afrMin = Config.getAfrMinimumValue();
