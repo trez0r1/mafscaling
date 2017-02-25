@@ -29,6 +29,11 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
         this.isPolfTableMap = isPolfTableMap;
     }
     
+    protected void addColumnsNote() {
+        if (!isPolfTableSet)
+            addColumnsNote("If you don't have 'Commanded AFR' / 'Fueling Final Base' please set 'POL Fueling' table first");
+    }
+    
     protected void addColSelection() {
         addRPMColSelection();
         if (isPolfTableMap)

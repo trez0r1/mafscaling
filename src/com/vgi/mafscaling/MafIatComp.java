@@ -247,7 +247,18 @@ public class MafIatComp extends ACompCalc {
         if (logRpmColIdx == -1)                                       { Config.setRpmColumnName(Config.NO_NAME);           ret = false; }
         if (logLoadColIdx == -1 && isPolfTableSet && !isPolfTableMap) { Config.setLoadColumnName(Config.NO_NAME);          ret = false; }
         if (logMapColIdx == -1 && isPolfTableMap)                     { Config.setMapColumnName(Config.NO_NAME);           ret = false; }
-        if (logCommandedAfrColIdx == -1 && !isPolfTableSet)           { Config.setCommandedAfrColumnName(Config.NO_NAME);  ret = false; }
+        if (logCommandedAfrColIdx == -1) {
+            if (isPolfTableSet) {
+                if (!logCommandedAfrColName.equals(Config.NO_NAME)) {
+                    JOptionPane.showMessageDialog(null, "'Commanded AFR' column is specified but was not found in the log file.\nResetting 'Commanded AFR' column to blank", "Invalid column", JOptionPane.WARNING_MESSAGE);
+                    Config.setCommandedAfrColumnName(Config.NO_NAME);
+                }
+            }
+            else {
+                Config.setCommandedAfrColumnName(Config.NO_NAME);
+                ret = false;
+            }
+        }
         isMafIatInRatio = Config.getIsMafIatInRatio();
         afrRowOffset = Config.getWBO2RowOffset();
         corrApplied = Config.getMICorrectionAppliedValue();
@@ -312,8 +323,6 @@ public class MafIatComp extends ACompCalc {
                 double pThrottle = 0;
                 double ppThrottle = 0;
                 double afr = 0;
-                double rpm = 0;
-                double loadOrMap = 0;
                 double corr = 0;
                 double cmdafr = 0;
                 double trims = 0;
@@ -366,12 +375,11 @@ public class MafIatComp extends ACompCalc {
                                 }
                                 else {
                                     afr = Double.valueOf(afrflds[logWBAfrColIdx]);
-                                    rpm = Double.valueOf(flds[logRpmColIdx]);
                                     if (logCommandedAfrColIdx >= 0)
                                         cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
                                     else {
-                                        loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
-                                        cmdafr = Utils.calculateCommandedAfr(rpm, loadOrMap, minWotEnrichment, polfTable);
+                                        double loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
+                                        cmdafr = Utils.calculateCommandedAfr(Double.valueOf(flds[logRpmColIdx]), loadOrMap, minWotEnrichment, polfTable);
                                     }
                                     corr = (afr / ((100.0 - trims) / 100.0)) / cmdafr;
                                 }
