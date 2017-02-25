@@ -77,8 +77,8 @@ public class OpenLoop extends AMafScaling {
     private int logAfrColIdx = -1;
     private int logRpmColIdx = -1;
     private int logLoadColIdx = -1;
-    private int logCommandedAfrColIdx = -1;
     private int logMapColIdx = -1;
+    private int logCommandedAfrColIdx = -1;
     
     private JCheckBox checkBoxMafRpmData = null;
     private ArrayList<Double> afrArray = new ArrayList<Double>();
@@ -609,12 +609,12 @@ public class OpenLoop extends AMafScaling {
         logLoadColIdx = columns.indexOf(logLoadColName);
         logMapColIdx = columns.indexOf(logMapColName);
         logCommandedAfrColIdx = columns.indexOf(logCommandedAfrColName);
-        if (logThtlAngleColIdx == -1)              { Config.setThrottleAngleColumnName(Config.NO_NAME); ret = false; }
-        if (logAfLearningColIdx == -1)             { Config.setAfLearningColumnName(Config.NO_NAME);    ret = false; }
-        if (logAfCorrectionColIdx == -1)           { Config.setAfCorrectionColumnName(Config.NO_NAME);  ret = false; }
-        if (logMafvColIdx == -1)                   { Config.setMafVoltageColumnName(Config.NO_NAME);    ret = false; }
-        if (logAfrColIdx == -1)                    { Config.setWidebandAfrColumnName(Config.NO_NAME);   ret = false; }
-        if (logRpmColIdx == -1)                    { Config.setRpmColumnName(Config.NO_NAME);           ret = false; }
+        if (logThtlAngleColIdx == -1)                                 { Config.setThrottleAngleColumnName(Config.NO_NAME); ret = false; }
+        if (logAfLearningColIdx == -1)                                { Config.setAfLearningColumnName(Config.NO_NAME);    ret = false; }
+        if (logAfCorrectionColIdx == -1)                              { Config.setAfCorrectionColumnName(Config.NO_NAME);  ret = false; }
+        if (logMafvColIdx == -1)                                      { Config.setMafVoltageColumnName(Config.NO_NAME);    ret = false; }
+        if (logAfrColIdx == -1)                                       { Config.setWidebandAfrColumnName(Config.NO_NAME);   ret = false; }
+        if (logRpmColIdx == -1)                                       { Config.setRpmColumnName(Config.NO_NAME);           ret = false; }
         if (logLoadColIdx == -1 && isPolfTableSet && !isPolfTableMap) { Config.setLoadColumnName(Config.NO_NAME);          ret = false; }
         if (logMapColIdx == -1 && isPolfTableMap)                     { Config.setMapColumnName(Config.NO_NAME);           ret = false; }
         if (logCommandedAfrColIdx == -1) {
@@ -666,8 +666,8 @@ public class OpenLoop extends AMafScaling {
                 }
                 
                 if (resetColumns || logThtlAngleColIdx < 0 || logAfLearningColIdx < 0 || logAfCorrectionColIdx < 0 || 
-                        logMafvColIdx < 0 || logAfrColIdx < 0 || logRpmColIdx < 0 || (!isPolfSet && logCommandedAfrColIdx < 0) ||
-                        (isPolfSet && (!isPolfMap && logLoadColIdx < 0) || (isPolfMap && logMapColIdx < 0))) {
+                    logMafvColIdx < 0 || logAfrColIdx < 0 || logRpmColIdx < 0 || (logLoadColIdx < 0 && !isPolfMap && isPolfSet) ||
+                    (logMapColIdx < 0 && isPolfMap) || (logCommandedAfrColIdx < 0 && !isPolfSet)) {
                     ColumnsFiltersSelection selectionWindow = new OLColumnsFiltersSelection(isPolfSet, isPolfMap);
                     if (!selectionWindow.getUserSettings(elements) || !getColumnsFilters(elements, isPolfSet, isPolfMap))
                         return;

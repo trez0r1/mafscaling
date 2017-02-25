@@ -77,7 +77,7 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
         }
         else
             Config.setRpmColumnName(value);
-
+        
         if (isPolfTableMap) {
             // Manifold Absolute Pressure
             value = mapName.getText().trim();
@@ -150,7 +150,7 @@ public class OLColumnsFiltersSelection extends ColumnsFiltersSelection {
         }
         else
             Config.setThrottleAngleColumnName(value);
-
+        
         // Commanded AFR
         value = commAfrName.getText().trim();
         colName = commAfrLabelText;

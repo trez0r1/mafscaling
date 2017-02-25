@@ -226,6 +226,7 @@ public class MafIatComp extends ACompCalc {
         logAfCorrectionColIdx = columns.indexOf(logAfCorrectionColName);
         logWBAfrColIdx = columns.indexOf(logWBAfrColName);
         logAfrColIdx = columns.indexOf(logAfrColName);
+        logCommandedAfrColIdx = columns.indexOf(logCommandedAfrColName);
         logTimeColIdx = columns.indexOf(logTimeColName);
         logMafvColIdx = columns.indexOf(logMafvColName);
         logIatColIdx = columns.indexOf(logIatColName);
@@ -233,7 +234,6 @@ public class MafIatComp extends ACompCalc {
         logRpmColIdx = columns.indexOf(logRpmColName);
         logLoadColIdx = columns.indexOf(logLoadColName);
         logMapColIdx = columns.indexOf(logMapColName);
-        logCommandedAfrColIdx = columns.indexOf(logCommandedAfrColName);
         if (logClOlStatusColIdx == -1)                                { Config.setClOlStatusColumnName(Config.NO_NAME);    ret = false; }
         if (logThrottleAngleColIdx == -1)                             { Config.setThrottleAngleColumnName(Config.NO_NAME); ret = false; }
         if (logAfLearningColIdx == -1)                                { Config.setAfLearningColumnName(Config.NO_NAME);    ret = false; }
@@ -289,9 +289,9 @@ public class MafIatComp extends ACompCalc {
                 getColumnsFilters(elements, isPolfSet, isPolfMap);
                 boolean resetColumns = false;
                 if (logThrottleAngleColIdx >= 0 || logAfLearningColIdx >= 0 || logAfCorrectionColIdx >= 0 ||
-                    logWBAfrColIdx >= 0 || logAfrColIdx >= 0 || logTimeColIdx >=0 || logMafvColIdx >= 0 ||
-                    logIatColIdx >= 0 || logMafColIdx >= 0 || logClOlStatusColIdx >= 0 || logRpmColIdx >= 0 ||
-                    logLoadColIdx >= 0 || logCommandedAfrColIdx >= 0 || logMapColIdx >= 0) {
+                    logWBAfrColIdx >= 0 || logAfrColIdx >= 0 || logCommandedAfrColIdx >= 0 || logTimeColIdx >=0 ||
+                    logMafvColIdx >= 0 || logIatColIdx >= 0 || logMafColIdx >= 0 || logClOlStatusColIdx >= 0 ||
+                    logRpmColIdx >= 0 || logLoadColIdx >= 0 || logMapColIdx >= 0) {
                     if (displayDialog) {
                         int rc = JOptionPane.showOptionDialog(null, "Would you like to reset column names or filter values?", "Columns/Filters Reset", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, optionButtons, optionButtons[0]);
                         if (rc == 0)
@@ -304,8 +304,8 @@ public class MafIatComp extends ACompCalc {
                 if (resetColumns || logThrottleAngleColIdx < 0 || logAfLearningColIdx < 0 ||
                     logAfCorrectionColIdx < 0 || logWBAfrColIdx < 0 || logAfrColIdx < 0 || logTimeColIdx < 0 || 
                     logMafvColIdx < 0 || logIatColIdx < 0 || logMafColIdx < 0 || logClOlStatusColIdx < 0 ||
-                    logRpmColIdx < 0 || (!isPolfSet && logCommandedAfrColIdx < 0) ||
-                    (isPolfSet && (!isPolfMap && logLoadColIdx < 0) || (isPolfMap && logMapColIdx < 0))) {
+                    logRpmColIdx < 0 || (logLoadColIdx < 0 && !isPolfMap && isPolfSet) || (logMapColIdx < 0 && isPolfMap) ||
+                    (logCommandedAfrColIdx < 0 && !isPolfSet)) {
                     ColumnsFiltersSelection selectionWindow = new MafIatColumnsFiltersSelection(isPolfSet, isPolfMap);
                     if (!selectionWindow.getUserSettings(elements) || !getColumnsFilters(elements, isPolfSet, isPolfMap))
                         return;
