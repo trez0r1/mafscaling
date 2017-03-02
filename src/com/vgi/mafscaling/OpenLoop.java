@@ -683,6 +683,7 @@ public class OpenLoop extends AMafScaling {
                 double mafv;
                 double cmdafr = 0;
                 double afrErr = 0;
+                double loadOrMap;
                 int skipRowCount = 0;
                 int row = 0;
                 int i = 0;
@@ -751,7 +752,7 @@ public class OpenLoop extends AMafScaling {
                                     if (logCommandedAfrColIdx >= 0)
                                         cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
                                     else {
-                                        double loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
+                                        loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
                                         cmdafr = Utils.calculateCommandedAfr(rpm, loadOrMap, minWotEnrichment, polfTable);
                                     }
 

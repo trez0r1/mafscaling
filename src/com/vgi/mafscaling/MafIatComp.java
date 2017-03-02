@@ -331,6 +331,8 @@ public class MafIatComp extends ACompCalc {
                 double maf = 0;
                 double mafv = 0;
                 double iat;
+                double loadOrMap;
+                
                 clearRunTables();
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 for (int k = 0; k <= afrRowOffset && line != null; ++k) {
@@ -378,7 +380,7 @@ public class MafIatComp extends ACompCalc {
                                     if (logCommandedAfrColIdx >= 0)
                                         cmdafr = Double.valueOf(flds[logCommandedAfrColIdx]);
                                     else {
-                                        double loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
+                                        loadOrMap = (isPolfMap ? Double.valueOf(flds[logMapColIdx]) : Double.valueOf(flds[logLoadColIdx]));
                                         cmdafr = Utils.calculateCommandedAfr(Double.valueOf(flds[logRpmColIdx]), loadOrMap, minWotEnrichment, polfTable);
                                     }
                                     corr = (afr / ((100.0 - trims) / 100.0)) / cmdafr;
